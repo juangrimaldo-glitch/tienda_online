@@ -51,7 +51,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
     <main class="contenido">
         <?php if (! $keepnav): ?>
         <section class="hero">
-             <img src="images/foto2.png" alt="Imagen principal de la tienda" class="hero-imagen">
+             <img src="images/foto2.jpg" alt="Imagen principal de la tienda" class="hero-imagen">
             <div class="hero-texto">
                 <h1>Bienvenido a TiendaOnline</h1>
                 <p>Encuentra los mejores productos al mejor precio </p>

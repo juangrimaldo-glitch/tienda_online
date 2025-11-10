@@ -35,7 +35,23 @@ class Producto
 
         return null;
     }
+
+    // 🔹 Nuevo método para filtrar por categoría
+    public static function byCategoria($categoriaId)
+    {
+        $conn = Database::getConnection();
+
+        if ($conn) {
+            $stmt = $conn->prepare("SELECT * FROM productos WHERE categoria_id = ?");
+            $stmt->bind_param("i", $categoriaId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows > 0) {
+                return $result->fetch_all(MYSQLI_ASSOC);
+            }
+        }
+
+        return [];
+    }
 }
-?>
-
-

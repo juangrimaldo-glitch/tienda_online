@@ -1,0 +1,107 @@
+@startuml
+!theme plain
+
+entity "usuarios" as usuarios {
+  *id : INT <<PK>>
+  --
+  username : VARCHAR(100)
+  email : VARCHAR(150)
+  password : VARCHAR(255)
+  telefono : VARCHAR(20)
+  created_at : DATETIME
+  updated_at : DATETIME
+}
+
+entity "categorias" as categorias {
+  *id : INT <<PK>>
+  --
+  nombre : VARCHAR(100)
+  descripcion : TEXT
+  created_at : DATETIME
+}
+
+entity "productos" as productos {
+  *id : INT <<PK>>
+  --
+  nombre : VARCHAR(150)
+  descripcion : TEXT
+  imagen : VARCHAR(255)
+  precio : DECIMAL(10,2)
+  categoria_id : INT <<FK>>
+  created_at : DATETIME
+}
+
+entity "inventario" as inventario {
+  *id : INT <<PK>>
+  --
+  producto_id : INT <<FK>>
+  cantidad : INT
+  ultima_actualizacion : DATETIME
+}
+
+entity "carrito_items" as carrito_items {
+  *id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  session_id : VARCHAR(255)
+  producto_id : INT <<FK>>
+  nombre : VARCHAR(150)
+  descripcion : TEXT
+  imagen : VARCHAR(255)
+  precio : DECIMAL(10,2)
+  cantidad : INT
+  added_at : DATETIME
+}
+
+entity "pedidos" as pedidos {
+  *id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  fecha : DATETIME
+  estado : VARCHAR(50)
+  total : DECIMAL(10,2)
+}
+
+entity "detalle_pedido" as detalle_pedido {
+  *id : INT <<PK>>
+  --
+  pedido_id : INT <<FK>>
+  producto_id : INT <<FK>>
+  cantidad : INT
+  precio_unitario : DECIMAL(10,2)
+}
+
+entity "direcciones" as direcciones {
+  *id : INT <<PK>>
+  --
+  user_id : INT <<FK>>
+  ciudad : VARCHAR(100)
+  departamento : VARCHAR(100)
+  created_at : DATETIME
+}
+
+entity "contactos" as contactos {
+  *id : INT <<PK>>
+  --
+  nombre : VARCHAR(100)
+  email : VARCHAR(150)
+  telefono : VARCHAR(20)
+  mensaje : TEXT
+  created_at : DATETIME
+}
+
+' ========================
+' Relaciones
+' ========================
+
+categorias ||--o{ productos : "clasifica"
+productos ||--|| inventario : "tiene"
+usuarios ||--o{ carrito_items : "agrega"
+productos ||--o{ carrito_items : "contiene"
+usuarios ||--o{ pedidos : "realiza"
+pedidos ||--o{ detalle_pedido : "incluye"
+productos ||--o{ detalle_pedido : "pertenece"
+usuarios ||--o{ direcciones : "posee"
+usuarios ||--o{ contactos : "envía mensaje"
+
+@enduml
