@@ -48,9 +48,57 @@
             <tr><td colspan="3">Total</td><td>$<?= number_format($total,2) ?></td></tr>
         </tfoot>
     </table>
+
+
+
+    <?php
+    // ✅ Generar mensaje de WhatsApp usando $items
+    $mensaje = "Hola, quiero comprar las siguientes plantas:%0A";
+    foreach ($items as $item) {
+        $nombre = isset($item['nombre']) ? $item['nombre'] : ($item['producto']['nombre'] ?? 'Producto');
+        $precio = isset($item['precio']) ? $item['precio'] : ($item['producto']['precio'] ?? 0);
+        $cantidad = isset($item['cantidad']) ? $item['cantidad'] : 1;
+        $mensaje .= "- " . urlencode($nombre) . " x" . $cantidad . " = $" . number_format($precio * $cantidad, 0, ',', '.') . "%0A";
+    }
+    $mensaje .= "%0ATotal: $" . number_format($total, 0, ',', '.');
+    $telefono = "3113941047";
+    $urlWhatsapp = "https://wa.me/57{$telefono}?text={$mensaje}";
+    ?>
+
+    <a href="<?= $urlWhatsapp ?>" target="_blank" class="boton comprar-whatsapp">
+        🛒 Comprar por WhatsApp
+    </a>
+<style>
+
+</style>
+
+
 <?php endif; ?>
 
+
 <style>
-table{width:100%;border-collapse:collapse}
-td,th{border:1px solid #ddd;padding:8px}
+table {width:100%;border-collapse:collapse}
+td, th {border:1px solid #ddd;padding:8px;text-align:left}
+tfoot td {font-weight:bold}
+.boton {
+	background-color:#007BFF;
+	color:white;
+	border:none;
+	padding:5px 10px;
+	border-radius:4px;
+	cursor:pointer;
+}
+.comprar-whatsapp {
+	display:inline-block;
+	background-color:#25D366;
+	color:white;
+	padding:10px 20px;
+	text-decoration:none;
+	border-radius:6px;
+	font-weight:bold;
+	margin-top:15px;
+}
+.comprar-whatsapp:hover {
+	background-color:#1DA851;
+}
 </style>
