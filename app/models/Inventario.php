@@ -41,4 +41,11 @@ class Inventario
         $stmt->bind_param("i", $producto_id);
         return $stmt->execute();
     }
+
+    // ✅ Método adicional para actualizar cantidad (usado en CarritoController)
+    public static function updateCantidad($producto_id, $cantidad)
+    {
+        // Solo llamamos al update existente
+        return self::update($producto_id, $cantidad);
+    }
 }
