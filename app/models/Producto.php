@@ -9,12 +9,10 @@ class Producto
 
         if ($conn) {
             $result = $conn->query("SELECT * FROM productos");
-
             if ($result && $result->num_rows > 0) {
                 return $result->fetch_all(MYSQLI_ASSOC);
             }
         }
-
         return [];
     }
 
@@ -32,11 +30,9 @@ class Producto
                 return $resultado->fetch_assoc();
             }
         }
-
         return null;
     }
 
-    // 🔹 Nuevo método para filtrar por categoría
     public static function byCategoria($categoriaId)
     {
         $conn = Database::getConnection();
@@ -51,7 +47,48 @@ class Producto
                 return $result->fetch_all(MYSQLI_ASSOC);
             }
         }
-
         return [];
+    }
+
+    public static function allWithStock()
+    {
+        $conn = Database::getConnection();
+        $query = "SELECT p.*, i.cantidad AS stock, c.nombre AS categoria
+                  FROM productos p
+                  LEFT JOIN inventario i ON p.id = i.producto_id
+                  LEFT JOIN categorias c ON p.categoria_id = c.id";
+        $result = $conn->query($query);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function create($categoria_id, $nombre, $descripcion, $imagen, $precio)
+    {
+        $conn = Database::getConnection();
+        $stmt = $conn->prepare("INSERT INTO productos (categoria_id, nombre, descripcion, imagen, precio)
+                                VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssd", $categoria_id, $nombre, $descripcion, $imagen, $precio);
+        $stmt->execute();
+        return $conn->insert_id;
+    }
+
+    public static function update($id, $categoria_id, $nombre, $descripcion, $imagen, $precio)
+    {
+        $conn = Database::getConnection();
+        if ($imagen) {
+            $stmt = $conn->prepare("UPDATE productos SET categoria_id=?, nombre=?, descripcion=?, imagen=?, precio=? WHERE id=?");
+            $stmt->bind_param("isssdi", $categoria_id, $nombre, $descripcion, $imagen, $precio, $id);
+        } else {
+            $stmt = $conn->prepare("UPDATE productos SET categoria_id=?, nombre=?, descripcion=?, precio=? WHERE id=?");
+            $stmt->bind_param("issdi", $categoria_id, $nombre, $descripcion, $precio, $id);
+        }
+        return $stmt->execute();
+    }
+
+    public static function delete($id)
+    {
+        $conn = Database::getConnection();
+        $stmt = $conn->prepare("DELETE FROM productos WHERE id=?");
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
     }
 }

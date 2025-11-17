@@ -25,6 +25,8 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             <ul class="nav-links">
                 <li><a href="index.php?url=inicio/index">Inicio</a></li>
                 <li><a href="index.php?url=nosotros/index&keepnav=1">Nosotros</a></li>
+                <li><a href="index.php?url=Contacto/index&keepnav=1">Contacto</a></li>
+                <li><a href="index.php?url=Direccion/index&keepnav=1">Direccion</a></li>
                 <li><a href="index.php?url=carrito/index&keepnav=1">Carrito</a> 
 
             <?php
@@ -39,11 +41,19 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             
             </li>
                 <?php if (!empty($_SESSION['user'])): ?>
-                    <li><a href="index.php?url=usuarios/perfil&keepnav=1">Hola, <?= htmlspecialchars($_SESSION['user']['username']) ?></a></li>
-                    <li><a href="index.php?url=usuarios/logout&keepnav=1">Cerrar sesión</a></li>
-                <?php else: ?>
-                    <li><a href="index.php?url=usuarios/login&keepnav=1">Login</a></li>
-                <?php endif; ?>
+             <li><a href="index.php?url=usuarios/perfil&keepnav=1">
+             Hola, <?= htmlspecialchars($_SESSION['user']['username']) ?> (<?= htmlspecialchars($_SESSION['user']['rol_nombre']) ?>)
+            </a></li>
+
+            <?php if ($_SESSION['user']['rol_nombre'] === 'admin'): ?>
+            <li><a href="index.php?url=admin/productos&keepnav=1">Panel Admin</a></li>
+
+            <?php endif; ?>
+
+          <li><a href="index.php?url=usuarios/logout&keepnav=1">Cerrar sesión</a></li>
+          <?php else: ?>
+          <li><a href="index.php?url=usuarios/login&keepnav=1">Login</a></li>
+          <?php endif; ?>
             </ul>
         </nav>
     </header>

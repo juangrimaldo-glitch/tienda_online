@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../models/Producto.php';
 require_once __DIR__ . '/../models/Categoria.php';
 
+
+
 class ProductoController
 {
     public function index()

@@ -4,25 +4,34 @@ require_once __DIR__ . '/../models/Usuario.php';
 class UsuarioController
 {
     public function login()
-    {
-        // GET shows form, POST processes
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = isset($_POST['email']) ? trim($_POST['email']) : '';
-            $pass = isset($_POST['password']) ? $_POST['password'] : '';
-            $user = Usuario::verifyCredentials($email, $pass);
-            if ($user) {
-                if (session_status() === PHP_SESSION_NONE) session_start();
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user'] = $user;
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $pass = isset($_POST['password']) ? $_POST['password'] : '';
+
+        // VERIFICAR CREDENCIALES CORRECTAMENTE
+        $user = Usuario::verifyCredentials($email, $pass);
+
+        if ($user) {
+            if (session_status() === PHP_SESSION_NONE) session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user'] = $user;
+
+            if ($user['rol_nombre'] === 'admin') {
+                header('Location: index.php?url=admin/productos_list');
+                exit;
+            } else {
                 $keep = isset($_REQUEST['keepnav']) && $_REQUEST['keepnav'] == '1' ? '&keepnav=1' : '';
                 header('Location: index.php?url=usuarios/perfil' . $keep);
                 exit;
-            } else {
-                $error = 'Credenciales inválidas';
             }
+        } else {
+            $error = "Credenciales inválidas";
         }
-        require_once __DIR__ . '/../views/usuarios/login.php';
     }
+
+    require_once __DIR__ . '/../views/usuarios/login.php';
+}
 
     public function registro()
     {
@@ -31,13 +40,16 @@ class UsuarioController
             $email = isset($_POST['email']) ? trim($_POST['email']) : '';
             $pass = isset($_POST['password']) ? $_POST['password'] : '';
             $exists = Usuario::findByEmail($email);
+
             if ($exists) {
                 $error = 'Ya existe un usuario con ese email';
             } else {
                 $user = Usuario::create($username, $email, $pass);
+
                 if (session_status() === PHP_SESSION_NONE) session_start();
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user'] = $user;
+
                 $keep = isset($_REQUEST['keepnav']) && $_REQUEST['keepnav'] == '1' ? '&keepnav=1' : '';
                 header('Location: index.php?url=usuarios/perfil' . $keep);
                 exit;
