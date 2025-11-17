@@ -24,10 +24,17 @@ class ProductoApiController {
         header('Content-Type: application/json');
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $resultado = Producto::create($data);
+        // Extraer campos del array
+        $categoria_id = $data['categoria_id'] ?? null;
+        $nombre       = $data['nombre'] ?? null;
+        $descripcion  = $data['descripcion'] ?? null;
+        $imagen       = $data['imagen'] ?? null;
+        $precio       = $data['precio'] ?? null;
+
+        $resultado = Producto::create($categoria_id, $nombre, $descripcion, $imagen, $precio);
 
         echo json_encode([
-            "success" => $resultado,
+            "success" => $resultado ? true : false,
             "message" => $resultado ? "Producto creado" : "Error al crear"
         ]);
     }
@@ -36,10 +43,17 @@ class ProductoApiController {
         header('Content-Type: application/json');
         $data = json_decode(file_get_contents("php://input"), true);
 
-        $resultado = Producto::update($id, $data);
+        // Extraer campos del array
+        $categoria_id = $data['categoria_id'] ?? null;
+        $nombre       = $data['nombre'] ?? null;
+        $descripcion  = $data['descripcion'] ?? null;
+        $imagen       = $data['imagen'] ?? null; // puede ser null
+        $precio       = $data['precio'] ?? null;
+
+        $resultado = Producto::update($id, $categoria_id, $nombre, $descripcion, $imagen, $precio);
 
         echo json_encode([
-            "success" => $resultado,
+            "success" => $resultado ? true : false,
             "message" => $resultado ? "Producto actualizado" : "Error al actualizar"
         ]);
     }
@@ -50,8 +64,9 @@ class ProductoApiController {
         $resultado = Producto::delete($id);
 
         echo json_encode([
-            "success" => $resultado,
+            "success" => $resultado ? true : false,
             "message" => $resultado ? "Producto eliminado" : "Error al eliminar"
         ]);
     }
 }
+
