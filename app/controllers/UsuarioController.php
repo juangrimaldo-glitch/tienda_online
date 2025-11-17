@@ -18,7 +18,7 @@ class UsuarioController
             $_SESSION['user'] = $user;
 
             if ($user['rol_nombre'] === 'admin') {
-                header('Location: index.php?url=admin/productos_list');
+                header('Location: index.php?url=admin/productos');
                 exit;
             } else {
                 $keep = isset($_REQUEST['keepnav']) && $_REQUEST['keepnav'] == '1' ? '&keepnav=1' : '';
