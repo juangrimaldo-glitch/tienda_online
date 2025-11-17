@@ -7,10 +7,9 @@ entity "usuarios" as usuarios {
   username : VARCHAR(100)
   email : VARCHAR(150)
   password : VARCHAR(255)
-  telefono : VARCHAR(20)
-  rol_id : INT <<FK>>
   created_at : DATETIME
   updated_at : DATETIME
+  rol_id : INT <<FK>>
 }
 
 entity "roles" as roles {
@@ -30,11 +29,11 @@ entity "categorias" as categorias {
 entity "productos" as productos {
   *id : INT <<PK>>
   --
+  categoria_id : INT <<FK>>
   nombre : VARCHAR(150)
   descripcion : TEXT
   imagen : VARCHAR(255)
   precio : DECIMAL(10,2)
-  categoria_id : INT <<FK>>
   created_at : DATETIME
 }
 
@@ -60,24 +59,6 @@ entity "carrito_items" as carrito_items {
   added_at : DATETIME
 }
 
-entity "pedidos" as pedidos {
-  *id : INT <<PK>>
-  --
-  user_id : INT <<FK>>
-  fecha : DATETIME
-  estado : VARCHAR(50)
-  total : DECIMAL(10,2)
-}
-
-entity "detalle_pedido" as detalle_pedido {
-  *id : INT <<PK>>
-  --
-  pedido_id : INT <<FK>>
-  producto_id : INT <<FK>>
-  cantidad : INT
-  precio_unitario : DECIMAL(10,2)
-}
-
 entity "direcciones" as direcciones {
   *id : INT <<PK>>
   --
@@ -90,7 +71,6 @@ entity "direcciones" as direcciones {
 entity "contactos" as contactos {
   *id : INT <<PK>>
   --
-  user_id : INT <<FK>>
   nombre : VARCHAR(100)
   email : VARCHAR(150)
   telefono : VARCHAR(20)
@@ -117,11 +97,8 @@ categorias ||--o{ productos : "clasifica"
 productos ||--|| inventario : "tiene"
 usuarios ||--o{ carrito_items : "agrega"
 productos ||--o{ carrito_items : "contiene"
-usuarios ||--o{ pedidos : "realiza"
-pedidos ||--o{ detalle_pedido : "incluye"
-productos ||--o{ detalle_pedido : "pertenece"
 usuarios ||--o{ direcciones : "posee"
-usuarios ||--o{ contactos : "envía"
+usuarios ||--o{ contactos : "envía mensaje"
 productos ||--o{ resenas : "recibe"
 usuarios ||--o{ resenas : "escribe"
 
