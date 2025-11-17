@@ -8,8 +8,15 @@ entity "usuarios" as usuarios {
   email : VARCHAR(150)
   password : VARCHAR(255)
   telefono : VARCHAR(20)
+  rol_id : INT <<FK>>
   created_at : DATETIME
   updated_at : DATETIME
+}
+
+entity "roles" as roles {
+  *id : INT <<PK>>
+  --
+  nombre : VARCHAR(50)
 }
 
 entity "categorias" as categorias {
@@ -83,6 +90,7 @@ entity "direcciones" as direcciones {
 entity "contactos" as contactos {
   *id : INT <<PK>>
   --
+  user_id : INT <<FK>>
   nombre : VARCHAR(100)
   email : VARCHAR(150)
   telefono : VARCHAR(20)
@@ -90,10 +98,21 @@ entity "contactos" as contactos {
   created_at : DATETIME
 }
 
+entity "resenas" as resenas {
+  *id : INT <<PK>>
+  --
+  producto_id : INT <<FK>>
+  usuario : VARCHAR(100)
+  comentario : TEXT
+  calificacion : INT
+  fecha : DATETIME
+}
+
 ' ========================
 ' Relaciones
 ' ========================
 
+roles ||--o{ usuarios : "asigna"
 categorias ||--o{ productos : "clasifica"
 productos ||--|| inventario : "tiene"
 usuarios ||--o{ carrito_items : "agrega"
@@ -102,6 +121,9 @@ usuarios ||--o{ pedidos : "realiza"
 pedidos ||--o{ detalle_pedido : "incluye"
 productos ||--o{ detalle_pedido : "pertenece"
 usuarios ||--o{ direcciones : "posee"
-usuarios ||--o{ contactos : "envía mensaje"
+usuarios ||--o{ contactos : "envía"
+productos ||--o{ resenas : "recibe"
+usuarios ||--o{ resenas : "escribe"
 
 @enduml
+

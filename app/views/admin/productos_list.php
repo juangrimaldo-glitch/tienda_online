@@ -20,14 +20,13 @@
         <?php foreach ($productos as $p): ?>
             <tr>
                 <td><?= $p['id'] ?></td>
-                <td><img src="public/<?= $p['imagen'] ?>" width="70" height="70" style="object-fit:cover;"></td>
+                <td><img src="<?= $p['imagen'] ?>" width="70" height="70" style="object-fit:cover;"></td>
                 <td><?= $p['nombre'] ?></td>
                 <td><?= $p['categoria'] ?></td>
                 <td>$<?= number_format($p['precio'], 0) ?></td>
                 <td><?= $p['stock'] ?></td>
                 <td>
                     <a class="btn btn-warning btn-sm" href="index.php?url=admin/editarProducto/<?= $p['id'] ?>">Editar</a>
-
                     <a class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminarlo?')" href="index.php?url=admin/eliminarProducto/<?= $p['id'] ?>">Eliminar</a>
                 </td>
             </tr>
@@ -36,3 +35,5 @@
 </table>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+
+

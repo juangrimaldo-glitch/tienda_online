@@ -41,7 +41,7 @@
     <div class="mb-3">
         <label>Imagen Actual</label>
         <br>
-        <img src="public/<?= $producto['imagen'] ?>" width="120" height="120" style="object-fit:cover;">
+        <img src="<?= $producto['imagen'] ?>" width="120" height="120" style="object-fit:cover;">
         <br><br>
         <input type="file" name="imagen" class="form-control">
     </div>
