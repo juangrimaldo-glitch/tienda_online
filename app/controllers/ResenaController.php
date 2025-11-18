@@ -16,8 +16,9 @@ class ResenaController
             }
 
             // 🔹 Redirige al mismo producto, SIN cambiar de vista
-            header('Location: index.php?url=producto/detalle/' . $productoId);
-            exit;
+            echo "<script>window.location='index.php?url=producto/detalle/$productoId';</script>";
+exit;
+
         }
     }
 }

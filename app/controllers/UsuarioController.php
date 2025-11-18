@@ -71,11 +71,19 @@ class UsuarioController
     }
 
     public function logout()
-    {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        session_unset();
-        session_destroy();
-        header('Location: index.php');
-        exit;
+ {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+
+    session_unset();
+    session_destroy();
+
+    // Limpia el buffer si ya hay salida previa
+    if (ob_get_length()) {
+        ob_end_clean();
     }
+
+    header("Location: index.php");
+    exit;
+ }
+
 }

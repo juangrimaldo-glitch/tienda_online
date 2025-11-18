@@ -1,4 +1,7 @@
 <?php
+// Habilitar buffer de salida para evitar errores de cabeceras
+ob_start();
+
 // Front controller con soporte MVC y API REST
 
 $plain = isset($_GET['plain']) && $_GET['plain'] == '1';
@@ -40,7 +43,9 @@ if (isset($parts[0]) && $parts[0] === 'api') {
         echo json_encode(["error" => "API ruta no encontrada"]);
     }
 
-    exit; // Muy importante — evita ejecutar el resto
+    // Finalizar correctamente cualquier contenido pendiente antes de salir
+    ob_end_flush();
+    exit;
 }
 
 // =============================================================
@@ -52,7 +57,6 @@ if (!$plain) {
 }
 
 if ($url === '') {
-    // Página inicial por defecto: lista de productos
     require_once __DIR__ . '/../app/controllers/ProductoController.php';
     $controller = new ProductoController();
     $controller->index();
@@ -84,6 +88,7 @@ if ($url === '') {
 if (!$plain) {
     require_once __DIR__ . '/../app/views/layouts/footer.php';
 }
+
+// Enviar toda la salida pendiente
+ob_end_flush();
 ?>
-
-

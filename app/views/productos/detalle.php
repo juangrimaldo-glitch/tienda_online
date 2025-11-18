@@ -1,131 +1,147 @@
 <?php // $producto es pasado por el controlador ?>
-
-<?php
+<?php 
 require_once __DIR__ . '/../../models/Inventario.php';
 $cantidad = Inventario::getCantidad($producto['id']);
 $keep = isset($_GET['keepnav']) && $_GET['keepnav']=='1' ? '&keepnav=1' : '';
 ?>
 
-<div class="detalle-producto">
-    <div class="col-izq">
-        <img 
-            src="<?= htmlspecialchars($producto['imagen'] ?? 'assets/img/no-image.png') ?>" 
-            alt="<?= htmlspecialchars($producto['nombre']) ?>" 
-            class="imagen-grande"
-            onerror="this.src='assets/img/no-image.png'; this.style.border='2px solid red';"
-        >
-    </div>
+<div class="container py-5 text-light">
+    <div class="row detalle-producto g-4 align-items-start">
 
-    <div class="col-der">
-        <h2><?= htmlspecialchars($producto['nombre']) ?></h2>
-        <p class="descripcion"><?= nl2br(htmlspecialchars($producto['descripcion'])) ?></p>
-        <p class="precio">$<?= number_format($producto['precio'], 0, ',', '.') ?></p>
+        <!-- ==================== IZQUIERDA ==================== -->
+        <div class="col-md-6 d-flex flex-column">
 
-        <p class="stock">
+            <!-- Imagen -->
+            <div class="text-center mb-4">
+                <img 
+                    src="<?= htmlspecialchars($producto['imagen'] ?? 'assets/img/no-image.png') ?>" 
+                    alt="<?= htmlspecialchars($producto['nombre']) ?>" 
+                    class="img-fluid rounded shadow-lg producto-img"
+                    onerror="this.src='assets/img/no-image.png'; this.style.border='2px solid red';"
+                >
+            </div>
+
+            <!-- Formulario de Reseña -->
+            <div class="bg-dark p-4 rounded shadow-lg flex-grow-1">
+                <h3 class="fw-bold mb-3" style="color:#f5d06f;">Deja tu reseña</h3>
+
+                <form action="index.php?url=resena/crear" method="post" class="form-resena">
+                    <input type="hidden" name="producto_id" value="<?= $producto['id'] ?>">
+
+                    <div class="mb-3">
+                        <label class="form-label">Tu nombre:</label>
+                        <input type="text" name="usuario" class="form-control bg-dark text-light border-warning" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Calificación:</label>
+                        <select name="calificacion" class="form-select bg-dark text-light border-warning estrellas" required>
+                            <option value="5">★★★★★</option>
+                            <option value="4">★★★★☆</option>
+                            <option value="3">★★★☆☆</option>
+                            <option value="2">★★☆☆☆</option>
+                            <option value="1">★☆☆☆☆</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Comentario:</label>
+                        <textarea name="comentario" rows="3" class="form-control bg-dark text-light border-warning" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning fw-bold">Enviar reseña</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==================== DERECHA ==================== -->
+        <div class="col-md-6 d-flex flex-column">
+
+            <!-- Información del producto -->
+            <h2 class="fw-bold mb-3" style="color:#f5d06f; text-shadow:0 0 6px black;">
+                <?= htmlspecialchars($producto['nombre']) ?>
+            </h2>
+
+            <p class="descripcion mb-3"><?= nl2br(htmlspecialchars($producto['descripcion'])) ?></p>
+            <p class="precio fs-4 fw-bold text-light">$<?= number_format($producto['precio'], 0, ',', '.') ?></p>
+
+            <p class="stock mb-3">
+                <?php if($cantidad>0): ?>
+                    <span class="badge bg-success">Disponibles: <?= $cantidad ?></span>
+                <?php else: ?>
+                    <span class="badge bg-danger">AGOTADO</span>
+                <?php endif; ?>
+            </p>
+
             <?php if($cantidad>0): ?>
-                <strong>Disponibles:</strong> <?= $cantidad ?>
-            <?php else: ?>
-                <span style="color:red;font-weight:bold;">AGOTADO</span>
+            <form id="add-to-cart-form" action="index.php?url=carrito/add<?= $keep ?>" method="post" class="mb-4">
+                <input type="hidden" name="product_id" value="<?= $producto['id'] ?>">
+
+                <div class="mb-3">
+                    <label for="cantidad-input" class="form-label fw-semibold" style="color:#f5d06f;">Cantidad:</label>
+                    <input type="number" id="cantidad-input" name="cantidad" value="1" min="1" max="<?= $cantidad ?>"
+                           class="form-control bg-dark text-light border-warning" style="max-width:120px;" required>
+                </div>
+
+                <button type="submit" id="cart-button" class="btn btn-warning fw-bold">
+                    🛒 Añadir al carrito
+                </button>
+                <span id="cart-confirm" class="ms-3 text-success fw-bold" style="display:none;">Añadido</span>
+            </form>
             <?php endif; ?>
-        </p>
 
-        <?php if($cantidad>0): ?>
-        <form id="add-to-cart-form" action="index.php?url=carrito/add<?= $keep ?>" method="post">
-            <input type="hidden" name="product_id" value="<?= $producto['id'] ?>">
-            <label>Cantidad:
-                <input type="number" id="cantidad-input" name="cantidad" value="1" min="1" max="<?= $cantidad ?>" required>
-            </label>
-            <br><br>
-            <button type="submit" id="cart-button" class="boton">Añadir al carrito</button>
-            <span id="cart-confirm" style="display:none;margin-left:10px;color:green;font-weight:bold">Añadido</span>
-        </form>
-        <?php endif; ?>
+            <!-- Reseñas de otros usuarios -->
+            <div class="bg-dark p-4 rounded shadow-lg flex-grow-1 mt-4">
+                <h3 class="fw-bold mb-3" style="color:#f5d06f;">Reseñas de otros usuarios</h3>
 
-        <!-- 🔽 FORMULARIO DE RESEÑA -->
-        <hr style="margin:20px 0;">
-        <h3>Deja tu reseña</h3>
-        <form action="index.php?url=resena/crear" method="post" class="form-resena">
-            <input type="hidden" name="producto_id" value="<?= $producto['id'] ?>">
-            <label>Tu nombre:</label><br>
-            <input type="text" name="usuario" required><br><br>
-            <label>Calificación:</label><br>
-            <select name="calificacion" required>
-                <option value="5">⭐⭐⭐⭐⭐ </option>
-                <option value="4">⭐⭐⭐⭐ </option>
-                <option value="3">⭐⭐⭐ </option>
-                <option value="2">⭐⭐ </option>
-                <option value="1">⭐ </option>
-            </select><br><br>
-            <label>Comentario:</label><br>
-            <textarea name="comentario" rows="3" required></textarea><br><br>
-            <button type="submit" class="boton">Enviar reseña</button>
-        </form>
-
-        <!-- 🔽 LISTA DE RESEÑAS -->
-        <hr style="margin:25px 0;">
-        <h3>Reseñas de otros usuarios</h3>
-        <?php
-        require_once __DIR__ . '/../../models/Resena.php';
-        $resenas = Resena::getPorProducto($producto['id']);
-        if (count($resenas) === 0) {
-            echo "<p>Aún no hay reseñas para este producto.</p>";
-        } else {
-            foreach ($resenas as $r) {
-                echo "<div class='resena'>";
-                echo "<strong>" . htmlspecialchars($r['usuario']) . "</strong> ";
-                echo "<span>(" . $r['calificacion'] . "⭐)</span><br>";
-                echo "<p>" . nl2br(htmlspecialchars($r['comentario'])) . "</p>";
-                echo "<small>" . $r['fecha'] . "</small>";
-                echo "<hr>";
-                echo "</div>";
-            }
-        }
-        ?>
+                <div class="resenas-list">
+                    <?php
+                    require_once __DIR__ . '/../../models/Resena.php';
+                    $resenas = Resena::getPorProducto($producto['id']);
+                    if (count($resenas) === 0) {
+                        echo "<p class='text-light'>Aún no hay reseñas para este producto.</p>";
+                    } else {
+                        foreach ($resenas as $r) {
+                            echo "<div class='resena mb-3'>";
+                            echo "<strong style='color:#f5d06f;'>" . htmlspecialchars($r['usuario']) . "</strong><br>";
+                            echo "<span class='estrellas-show'>" . str_repeat('⭐', $r['calificacion']) . "</span><br>";
+                            echo "<p class='text-light'>" . nl2br(htmlspecialchars($r['comentario'])) . "</p>";
+                            echo "<small class='text-secondary'>" . $r['fecha'] . "</small>";
+                            echo "<hr class='border-secondary'>";
+                            echo "</div>";
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <style>
-.detalle-producto { display:flex; gap:20px; align-items:flex-start; }
-.col-izq { flex:1; }
-.col-der { width:420px; }
-.imagen-grande { width:100%; max-width:600px; object-fit:contain; border-radius:8px; }
-.descripcion { margin-top:15px; line-height:1.5; text-align:justify; }
-.precio { font-weight:bold; font-size:1.2em; margin-top:10px; }
-.stock { margin-top:8px; color:#333; font-size:1em; }
-.stock strong { color:#2c6e49; }
-.boton { background-color:#2c6e49; color:white; padding:10px 18px; border:none; border-radius:5px; cursor:pointer; font-size:1em; }
-.boton:hover { background-color:#245c3d; }
+    body {
+        background: #181616ff !important;
+    }
+    .producto-img {
+        max-height: 400px;
+        object-fit: contain;
+        transition: transform .25s ease-in-out;
+    }
+    .producto-img:hover {
+        transform: scale(1.04);
+        filter: brightness(1.12);
+    }
+
+    /* Estrellas mejoradas */
+    .estrellas, .estrellas-show {
+        font-size: 1.4rem;
+        color: gold;
+        text-shadow: 0 0 8px rgba(255,215,0,0.9), 0 0 12px rgba(255,215,0,0.7);
+        letter-spacing: 1px;
+        font-weight: bold;
+    }
+    .estrellas:hover {
+        transform: scale(1.04);
+        filter: brightness(1.3);
+    }
 </style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    const input = document.getElementById('cantidad-input');
-    const btn = document.getElementById('cart-button');
-    const confirmEl = document.getElementById('cart-confirm');
-    const maxStock = <?= $cantidad ?>;
-
-    if(input && btn){
-        input.addEventListener('input', function(){
-            let val = parseInt(input.value);
-            if(isNaN(val) || val < 1 || val > maxStock){
-                btn.disabled = true; btn.style.opacity='0.5';
-            } else { btn.disabled=false; btn.style.opacity='1'; }
-        });
-    }
-
-    if(btn && confirmEl){
-        btn.addEventListener('click', function(){
-            confirmEl.style.display='inline';
-            setTimeout(()=>{ confirmEl.style.display='none'; },2000);
-        });
-    }
-
-    // 🔹 Log del producto cargado
-    console.log("Vista detalle cargada para producto:", {
-        id: "<?= $producto['id'] ?>",
-        nombre: "<?= addslashes($producto['nombre']) ?>",
-        precio: "<?= $producto['precio'] ?>",
-        imagen: "<?= addslashes($producto['imagen']) ?>"
-    });
-});
-</script>
